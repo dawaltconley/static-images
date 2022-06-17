@@ -23,11 +23,11 @@ describe('parseSizes', () => {
       {
         conditions: [
           {
-            mediaFeature: 'max-with',
-            value: '100vw',
+            mediaFeature: 'max-width',
+            value: '680px',
           },
         ],
-        width: '400px',
+        width: '100vw',
       },
     ])
   })
