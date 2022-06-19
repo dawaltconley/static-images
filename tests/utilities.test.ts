@@ -74,6 +74,26 @@ describe('parseSizes', () => {
       { conditions: [], width: '100vw' },
     ])
   })
+  test('', () => {
+    expect(
+      parseSizes('(max-width: 780px) and (max-height: 720px) 600px, 400px')
+    ).toEqual([
+      {
+        conditions: [
+          {
+            mediaFeature: 'max-width',
+            value: '780px',
+          },
+          {
+            mediaFeature: 'max-height',
+            value: '720px',
+          },
+        ],
+        width: '600px',
+      },
+      { conditions: [], width: '400px' },
+    ])
+  })
 })
 
 // test('filterSizes', () => {
