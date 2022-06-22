@@ -208,17 +208,7 @@ function parseSizes(sizesQueryString: SizesQuery.String): SizesQuery.Object[] {
 
     let [, mediaCondition, width]: string[] = parsed
     if (mediaCondition) {
-      if (
-        /^\(.*\)$/.test(mediaCondition) &&
-        mediaCondition.indexOf('(', 1) > mediaCondition.indexOf(')')
-      ) {
-        // not clear what this condition is supposed to do
-        // seems like it wants to remove enclosing parenthesis
-        // but it never seems to fire
-        // probably wants to fire on ((min-width: 49em) and (max-width: 55px))
-        // but instead fires on (min-width: 49em) and (max-width: 55px)
-        mediaCondition = mediaCondition.slice(1, -1)
-      }
+      // TODO handle expressions wrapped in extra parenthesis
       let mediaQuery = mediaParser(mediaCondition).nodes[0]
       for (let node of mediaQuery.nodes) {
         if (node.type === 'media-feature-expression') {
@@ -227,13 +217,17 @@ function parseSizes(sizesQueryString: SizesQuery.String): SizesQuery.Object[] {
               .value,
             value: node.nodes.find(n => n.type === 'value')!.value, // TODO if value is null, should treat valid mediaFeatures as booleans
           })
-        } else if (node.type === 'keyword' && node.value === 'and') {
-          continue // TODO wouldn't be valid sizes attribute, but regardless this doesn't work
-          // maybe parse with cssValue here?
+        } else if (node.type === 'keyword') {
+        // } else if (node.type === 'keyword' && node.value === 'and') {
+          // continue // TODO wouldn't be valid sizes attribute, but regardless this doesn't work
+          // // maybe parse with cssValue here?
+
           if (node.value === 'and' || node.value === 'only') {
             continue // ignore; add next valid node to the conditions list
           } else if (node.value === 'not') {
-            // handle
+            // TODO handle not
+            console.warn(`not keyword is not yet handled; ignoring`)
+            continue
           } else {
             throw new Error(`invalid media query keyword: ${node.value}`)
           }
@@ -243,8 +237,8 @@ function parseSizes(sizesQueryString: SizesQuery.String): SizesQuery.Object[] {
           else
             throw new Error(`media type ${node.value} cannot be used in a sizes attribute`)
         } else {
-          // not currently supporting other keywords, like not
-          break
+          console.error(node)
+          throw new Error('unhandled node type')
         }
       }
     }

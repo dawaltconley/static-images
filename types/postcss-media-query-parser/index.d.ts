@@ -9,12 +9,18 @@ declare namespace MediaQuery {
       | 'value' // i.e. '100px'
       | 'media-type' // i.e. 'print'
       | 'keyword' // i.e. 'not'
+      | undefined // invalid
     before: string
     after: string
     value: string
     sourceIndex: number
     parent?: Node
     nodes?: Node[]
+  }
+
+  // where does this go?
+  interface Undefined extends Node {
+    type: undefined
   }
 
   interface List extends Node {
