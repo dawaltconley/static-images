@@ -76,12 +76,12 @@ function deviceImages(
   })
 
   if (device.flip)
-    needImages = deviceImages(sizes, {
+    needImages = needImages.concat(deviceImages(sizes, {
       ...device,
       w: device.h,
       h: device.w,
       flip: false,
-    }).concat(needImages)
+    }))
 
   return needImages
 }

@@ -33,6 +33,7 @@ describe('parseSizes()', () => {
       },
     ])
   })
+
   test('parses media query with fallback value', () => {
     expect(parseSizes('(min-width: 680px) 400px, 100vw')).toEqual([
       {
@@ -47,6 +48,7 @@ describe('parseSizes()', () => {
       { conditions: [], width: '100vw' },
     ])
   })
+
   test('parses multiple media queries', () => {
     expect(
       parseSizes(
@@ -76,6 +78,7 @@ describe('parseSizes()', () => {
       { conditions: [], width: '100vw' },
     ])
   })
+
   test('parses combined media queries with the "and" keyword', () => {
     expect(
       parseSizes('(max-width: 780px) and (max-height: 720px) 600px, 400px')
@@ -321,10 +324,93 @@ describe('deviceImages()', () => {
   })
 
   test('handles a device with multiple resolutions', () => {
-    // TODO
+    let { sizes, pass, fail } = structuredClone(template)
+    pass.device.dppx = [4, 3.2, 2.0, 1.5, 1]
+    pass.images = [
+      {
+        w: 1600,
+        dppx: 4,
+        orientation: 'landscape',
+      },
+      {
+        w: 1280,
+        dppx: 3.2,
+        orientation: 'landscape',
+      },
+      {
+        w: 800,
+        dppx: 2,
+        orientation: 'landscape',
+      },
+      {
+        w: 600,
+        dppx: 1.5,
+        orientation: 'landscape',
+      },
+      {
+        w: 400,
+        dppx: 1,
+        orientation: 'landscape',
+      },
+    ]
+    fail.device.dppx = [4, 3.2, 2, 1.5, 1]
+    fail.images = [
+      {
+        w: 2000,
+        dppx: 4,
+        orientation: 'portrait',
+      },
+      {
+        w: 1600,
+        dppx: 3.2,
+        orientation: 'portrait',
+      },
+      {
+        w: 1000,
+        dppx: 2,
+        orientation: 'portrait',
+      },
+      {
+        w: 750,
+        dppx: 1.5,
+        orientation: 'portrait',
+      },
+      {
+        w: 500,
+        dppx: 1,
+        orientation: 'portrait',
+      },
+    ]
+
+    expect(deviceImages(sizes, pass.device)).toEqual(pass.images)
+    expect(deviceImages(sizes, fail.device)).toEqual(fail.images)
   })
 
   test('handles a flippable device', () => {
-    // TODO
+    let { sizes, pass, fail } = structuredClone(template)
+    pass.device.flip = true
+    pass.images = [
+      ...pass.images,
+      {
+        w: 400,
+        dppx: 1,
+        orientation: 'portrait',
+      },
+    ]
+    fail.device = {
+      ...fail.device,
+      h: 800,
+      flip: true,
+    }
+    fail.images = [
+      ...fail.images,
+      {
+        w: 400,
+        dppx: 1,
+        orientation: 'landscape',
+      },
+    ]
+    expect(deviceImages(sizes, pass.device)).toEqual(pass.images)
+    expect(deviceImages(sizes, fail.device)).toEqual(fail.images)
   })
 })
