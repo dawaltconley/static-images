@@ -199,6 +199,44 @@ describe('deviceImages()', () => {
     expect(deviceImages(sizes, fail.device)).toEqual(fail.images)
   })
 
+  test('determines image width using vw and dppx', () => {
+    let { sizes, pass, fail } = structuredClone(template)
+    sizes = [
+      {
+        conditions: [
+          {
+            mediaFeature: 'min-width',
+            value: '680px',
+          },
+        ],
+        width: '50vw',
+      },
+      { conditions: [], width: '75vw' },
+    ]
+    // pass remains the same, 400px
+    fail = {
+      device: {
+        ...fail.device,
+        dppx: [2, 1],
+      },
+      images: [
+        {
+          w: 750,
+          dppx: 2,
+          orientation: 'portrait',
+        },
+        {
+          w: 375,
+          dppx: 1,
+          orientation: 'portrait',
+        },
+      ],
+    }
+
+    expect(deviceImages(sizes, pass.device)).toEqual(pass.images)
+    expect(deviceImages(sizes, fail.device)).toEqual(fail.images)
+  })
+
   test('rounds up subpixels', () => {
     let { sizes, pass, fail } = structuredClone(template)
     sizes[0].width = '399.2px'
