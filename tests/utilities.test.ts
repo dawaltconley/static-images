@@ -452,3 +452,71 @@ describe('deviceImages()', () => {
     expect(deviceImages(sizes, fail.device)).toEqual(fail.images)
   })
 })
+
+describe('filterSizes()', () => {
+  const sampleWidths: number[] = [
+    200, 250, 380, 800, 801, 1000, 1050, 1100, 1440, 1900, 2000,
+  ]
+  test('filters similar widths by a default scaling factor', () => {
+    expect(filterSizes(sampleWidths)).toEqual([
+      2000, 1440, 1100, 801, 380, 250, 200,
+    ])
+  })
+  test('filters more widths with a stricter scaling factor', () => {
+    expect(filterSizes(sampleWidths, 0.6)).toEqual([
+      2000, 1440, 1100, 801, 380, 250,
+    ])
+    expect(filterSizes(sampleWidths, 0.5)).toEqual([2000, 1100, 380, 250])
+  })
+
+  const sampleDevices: Dimension[] = [
+    { w: 200, h: 200 },
+    { w: 250, h: 500 },
+    { w: 380, h: 2000 },
+    { w: 800, h: 450 },
+    { w: 801, h: 450 },
+    { w: 1000, h: 562.5 },
+    { w: 1050, h: 600 },
+    { w: 1100, h: 600 },
+    { w: 1440, h: 810 },
+    { w: 1900, h: 1600 },
+    { w: 2000, h: 1125 },
+  ]
+  test('filters a list of dimensions by their total area', () => {
+    expect(filterSizes(sampleDevices)).toEqual([
+      { w: 1900, h: 1600 },
+      { w: 2000, h: 1125 },
+      { w: 1440, h: 810 },
+      { w: 380, h: 2000 },
+      { w: 1000, h: 562.5 },
+      { w: 801, h: 450 },
+      { w: 250, h: 500 },
+      { w: 200, h: 200 },
+    ])
+  })
+  test('filters more devices with a stricter scaling factor', () => {
+    expect(filterSizes(sampleDevices, 0.7)).toEqual([
+      { w: 1900, h: 1600 },
+      { w: 1440, h: 810 },
+      { w: 380, h: 2000 },
+      { w: 801, h: 450 },
+      { w: 250, h: 500 },
+      { w: 200, h: 200 },
+    ])
+    expect(filterSizes(sampleDevices, 0.35)).toEqual([
+      { w: 1900, h: 1600 },
+      { w: 380, h: 2000 },
+      { w: 250, h: 500 },
+      { w: 200, h: 200 },
+    ])
+  })
+
+  test('filters no items with a scaling factor of 1', () => {
+    const sortedWidths = [...sampleWidths].sort((a, b) => b - a)
+    const sortedDevices = [...sampleDevices].sort(
+      (a, b) => b.w * b.h - a.w * a.h
+    )
+    expect(filterSizes(sampleWidths, 1)).toEqual(sortedWidths)
+    expect(filterSizes(sampleDevices, 1)).toEqual(sortedDevices)
+  })
+})
