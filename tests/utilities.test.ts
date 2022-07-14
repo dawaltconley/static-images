@@ -520,3 +520,8 @@ describe('filterSizes()', () => {
     expect(filterSizes(sampleDevices, 1)).toEqual(sortedDevices)
   })
 })
+
+describe('widthsFromSizes()', () => {
+  // test('image widths using the default devices', () => {
+  // })
+})

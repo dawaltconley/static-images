@@ -95,7 +95,7 @@ function widthsFromSizes(
   sizesQueryString: SizesQuery.String,
   opt?: Partial<{
     devices: Device[]
-    order: SizesQuery.Order
+    order: SizesQuery.Order // not currently used
     minScale: number
   }>
 ): number[] {
